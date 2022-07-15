@@ -1,0 +1,105 @@
+<% layout('layouts/boilerplate') -%>
+
+<section class="container">
+    
+    <%- include('../partials/flash') %>
+    
+    <div class="row">
+      <div class="col-lg-6">
+        
+          <div class="card mx-auto shadow-sm" style="width: 22rem;">
+              <img src="<%=product.img%>" class="card-img-top" alt="item image">
+              <div class="card-body">
+                <h5 class="card-title fw-bold"><%=product.name%></h5>
+                <p class="card-text"><%=product.desc%></p>
+                <h5 class="card-title fw-bold">Rs <%=product.price%></h5>
+
+                <form class="d-inline-block" action="/payment_gateway/payumoney" method="POST">
+                  <input type="hidden" name="amount" value="<%=product.price%>"/>
+                  <input type="hidden" name="phone" value="<%=currentUser.phone%>" />
+                  <input type="hidden" name="service_provider" value=""/>
+                  <input type="hidden" class="product" name="productinfo" 
+                   value="<%=product.desc%>"/>
+                   
+                   <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Buy Now</button>
+                </form>
+                  <!-- <a href="#" class="btn btn-sm btn-success rounded-pill px-3">Buy Now</a> -->
+                  <form class="d-inline-block" action="/user/<%=product._id%>/add" method="POST">
+                      <button type="submit" class="btn btn-sm btn-secondary rounded-pill px-3">Add to cart</button>
+                  </form>
+                
+
+                <% if(currentUser.role && currentUser.role === 'seller'){ %>
+                  <a href="/products/<%=product._id%>/edit" class="btn btn-sm btn-info">Edit</a>
+                  <form class="d-inline-block" action="/products/<%=product._id%>?_method=DELETE" method="post">
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                <% } %>
+                
+              </div>
+          </div>
+      </div>
+      <div class="col-lg-4 reviews-section mx-auto my-2">
+          <h1 class="display-6 fw-normal">Leave Your Review</h1>
+          <form action="/products/<%=product._id%>/review" method="POST" class="validated-form" novalidate>
+            <div class="mb-3">
+              <label for="rating" class="form-label">Rating</label>
+
+              <fieldset class="starability-basic">
+                <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="rating" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="rating" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="rating" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="rating" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="rating" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+              </fieldset>
+
+            </div>
+            <div class="mb-3">
+              <label for="desc" class="form-label">Description</label>
+              <textarea name="comment" id="desc" rows="3" class="form-control" required></textarea>
+            </div>
+            <button class="btn btn-success btn-sm">Submit</button>
+          </form>
+
+          <div class="my-3">
+
+                <%for(let review of product.reviews){%>
+                  <div class="card mb-3">
+                    <!-- <h5 class="card-header">Rating : <%=review.rating%></h5> -->
+                    <!-- <h5 class="card-header">Rating : 
+                      <%for(let i = 1; i <= review.rating; i++){%>
+                        <span>&star;</span>
+                      <%}%>
+                    </h5> -->
+                    <div class="card-body">
+                      <p class="starability-result" data-rating="<%=review.rating%>">
+                        Rated: <%=review.rating%> stars
+                      </p>
+                      <p class="card-text"><%=review.comment%></p>
+                      
+                      <!-- Adding date and time of creation-->
+
+                      <!-- <%if(review.createdAt){%>
+                        <p class="text-muted"><%=review.createdAt.toDateString()%></p>
+                      <%}%> -->
+                        
+                      <!-- DELETE Review -->
+                      <!-- <form action="/products/<%=product._id%>/<%=review._id%>?_method=DELETE" method="post">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                      </form>
+                       -->
+                    </div>
+                  </div>
+                <%}%>
+              
+          </div>
+
+      </div>
+  </div>
+</section>

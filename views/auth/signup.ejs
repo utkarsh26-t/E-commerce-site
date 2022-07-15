@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') -%>
+
+
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <%- include('../partials/flash') %>
+        
+        <div class="card p-3 shadow-sm m-2">
+            <h1 class="display-6 fw-normal">Sign Up</h1>
+            <form action="/register" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Username">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="Email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="phone">Phone number</label>
+                    <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91" maxlength="10">
+                </div>
+                <div class="mb-3">
+                    <p>Want to register as ?</p>
+                    <div class="mx-2">
+                        <label class="form-label" for="seller">Seller</label>
+                        <input class="form-check-input mt-0" type="radio" name="role" value="seller" id="seller" aria-label="Radio button for following text input">
+                    </div>
+                    <div class="mx-2">
+                        <label class="form-label" for="buyer">Buyer</label>
+                        <input class="form-check-input mt-0" type="radio" name="role" value="buyer" id="buyer" aria-label="Radio button for following text input">
+                    </div>      
+        
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" id="password" class="form-control">
+                </div>
+                <button class="btn btn-sm btn-success" type="submit">SignUp</button>
+            </form>
+        </div>
+       
+    </div>
+</div>
