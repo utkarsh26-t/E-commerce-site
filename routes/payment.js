@@ -5,76 +5,49 @@ const jsSHA = require('jssha');
 const { v4: uuid } = require('uuid');
 const { isLoggedIn } = require('../middleware');
 const Order = require('../models/order');
+const User = require('../models/user')
 
-router.post('/payment_gateway/payumoney', isLoggedIn, (req, res) => {
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+router.get('/payment_gateway/stripe', isLoggedIn, async (req, res) => {
     
-    req.body.txnid = uuid();//Here pass txnid and it should be different on every call
-    req.body.email = req.user.email;
-    req.body.firstname = req.user.username;
-    //Here save all the details in pay object 
-    const pay = req.body;
+    try {
+        const userid = req.user._id;
+        const user = await User.findById(userid).populate("cart");
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            mode: "payment",
+            line_items: user.cart.map((item) => {
+                return {
+                price_data: {
+                    currency: "inr",
+                    product_data: {
+                    name: item.name,
+                    },
+                    unit_amount: item.price * 100,
+                },
+                quantity: 1,
+             };}),
+            success_url: "http://localhost:5000/payment/success",
+            cancel_url: "http://localhost:5000/payment/fail",
+        });
+        res.redirect(session.url);
+    } 
+    catch (e) {
+        res.status(500).json({ error: e.message })
+    }
     
-    const hashString =  process.env.MERCHANT_KEY//store in in different file
-                        + '|' + pay.txnid
-                        + '|' + pay.amount 
-                        + '|' + pay.productinfo 
-                        + '|' + pay.firstname 
-                        + '|' + pay.email 
-                        + '|' + '||||||||||'
-                        + process.env.MERCHANT_SALT //store in in different file
-    
-    const sha = new jsSHA('SHA-512', "TEXT");
-    
-    sha.update(hashString);
-    //Getting hashed value from sha module
-    const hash = sha.getHash("HEX");
-    
-    //We have to additionally pass merchant key to API so remember to include it.
-    pay.key =   process.env.MERCHANT_KEY //store in in different file;
-    pay.surl = 'https://glacial-gorge-67411.herokuapp.com/payment/success';
-    pay.furl = 'https://glacial-gorge-67411.herokuapp.com/payment/fail';
-    pay.hash = hash;
-    
-    //Making an HTTP/HTTPS call with request
-    request.post({
-    
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-        },
-        // url: 'https://sandboxsecure.payu.in/_payment', //Testing url
-        url: '	https://test.payu.in/_payment', //Testing url
-        form: pay
-    
-    }, function (error, httpRes, body) {
-        if (error) 
-            res.send(
-                {
-                    status: false,
-                    message:error.toString()
-                });
-        
-        if (httpRes.statusCode === 200) {
-            res.send(body);
-        }
-        else if (httpRes.statusCode >= 300 && httpRes.statusCode <= 400) {
-            res.redirect(httpRes.headers.location.toString());
-        }
-    })
 });
 
 
-router.post('/payment/success', async (req, res) => {
-
-    const { txnid, productinfo, amount } = req.body;
+router.get('/payment/success', async (req, res) => {
 
     // Getting the current User 
     const user = req.user;
 
     // Creating a new order and storing the whole cart into orderedProduct
-
-    const order = new Order({txnid,productinfo,amount,orderedProducts:[...user.cart]})
+    const order = new Order({txnid:uuid(), orderedProducts:[...user.cart]})
     
     // Pushing the new order into user's order array
     user.orders.push(order);
@@ -92,8 +65,7 @@ router.post('/payment/success', async (req, res) => {
     res.redirect('/user/myorders');
 });
 
-router.post('/payment/fail', (req, res) => {
-
+router.get('/payment/fail', (req, res) => {
     req.flash('error',`Oops! Can't place your order at the moment.Please try again after some time!`)
     res.redirect('/user/cart');
 })

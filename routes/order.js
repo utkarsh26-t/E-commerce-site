@@ -14,7 +14,7 @@ router.get('/user/myorders',isLoggedIn,async(req, res) => {
             path: 'orderedProducts'
         }
     });
-
+    
     res.render('orders/myOrders',{orders:user.orders});
 });
 

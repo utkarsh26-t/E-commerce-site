@@ -14,7 +14,8 @@
                 <p class="card-text"><%=product.desc%></p>
                 <h5 class="card-title fw-bold">Rs <%=product.price%></h5>
 
-                <form class="d-inline-block" action="/payment_gateway/payumoney" method="POST">
+
+                <!-- <form class="d-inline-block" action="/payment_gateway/payumoney" method="POST">
                   <input type="hidden" name="amount" value="<%=product.price%>"/>
                   <input type="hidden" name="phone" value="<%=currentUser.phone%>" />
                   <input type="hidden" name="service_provider" value=""/>
@@ -22,8 +23,9 @@
                    value="<%=product.desc%>"/>
                    
                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Buy Now</button>
-                </form>
+                </form> -->
                   <!-- <a href="#" class="btn btn-sm btn-success rounded-pill px-3">Buy Now</a> -->
+                  
                   <form class="d-inline-block" action="/user/<%=product._id%>/add" method="POST">
                       <button type="submit" class="btn btn-sm btn-secondary rounded-pill px-3">Add to cart</button>
                   </form>

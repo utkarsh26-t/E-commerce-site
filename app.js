@@ -92,9 +92,8 @@ app.use(passport.session());
 //Telling the passport to check for username and password using authenticate method provided by the passport local mongoose package
 passport.use(new LocalStrategy(User.authenticate()));
 
-// add the user into the session
+
 passport.serializeUser(User.serializeUser());
-// removes the use from the session
 passport.deserializeUser(User.deserializeUser());
 
 
