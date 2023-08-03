@@ -16,21 +16,23 @@ router.get('/payment_gateway/stripe', isLoggedIn, async (req, res) => {
         const user = await User.findById(userid).populate("cart");
 
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            mode: "payment",
-            line_items: user.cart.map((item) => {
-                return {
-                price_data: {
-                    currency: "inr",
-                    product_data: {
-                    name: item.name,
-                    },
-                    unit_amount: item.price * 100,
+          payment_method_types: ["card"],
+          mode: "payment",
+          line_items: user.cart.map((item) => {
+            return {
+              price_data: {
+                currency: "inr",
+                product_data: {
+                  name: item.name,
                 },
-                quantity: 1,
-             };}),
-            success_url: "http://localhost:5000/payment/success",
-            cancel_url: "http://localhost:5000/payment/fail",
+                unit_amount: item.price * 100,
+              },
+              quantity: 1,
+            };
+          }),
+          success_url:
+            "https://rich-gold-vulture-tux.cyclic.app/payment/success",
+          cancel_url: "https://rich-gold-vulture-tux.cyclic.app/payment/fail",
         });
         res.redirect(session.url);
     } 
