@@ -41,7 +41,11 @@ module.exports.removeFromCart = async (req, res) => {
     const {productid} = req.params;
     const userid = req.user._id;
 
-    req.user = await User.findByIdAndUpdate(userid, { ['$pull']: { cart: productid } }, { new: true });
+    req.user = await User.findByIdAndUpdate(
+      userid,
+      { ["$pull"]: { cart: productid } },
+      { new: true }
+    );
 
     req.flash('success', 'Item has been removed from your saved list');
     res.redirect('/user/cart');
