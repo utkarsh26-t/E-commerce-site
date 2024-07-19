@@ -31,8 +31,9 @@ router.get('/payment_gateway/stripe', isLoggedIn, async (req, res) => {
             };
           }),
           success_url:
-            "https://rich-gold-vulture-tux.cyclic.app/payment/success",
-          cancel_url: "https://rich-gold-vulture-tux.cyclic.app/payment/fail",
+            "https://e-commerce-site-psi-teal.vercel.app/payment/success",
+          cancel_url:
+            "https://e-commerce-site-psi-teal.vercel.app/payment/fail",
         });
         res.redirect(session.url);
     } 
